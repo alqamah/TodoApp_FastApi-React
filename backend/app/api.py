@@ -6,7 +6,9 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    "localhost:5173"
+    "localhost:5173",
+    "http://localhost:5175",
+    "localhost:5175"
 ]
 
 
@@ -19,6 +21,31 @@ app.add_middleware(
 )
 
 
+todos = [
+    {
+        "id": "1",
+        "item": "Read a book."
+    },
+    {
+        "id": "2",
+        "item": "Cycle around town."
+    }
+]
+
+
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
     return {"message": "Welcome to your todo list."}
+
+
+
+@app.get("/todo", tags=["todos"])
+async def get_todos() -> dict:
+    return { "data": todos }
+
+@app.post("/todo", tags=["todos"])
+async def add_todo(todo: dict) -> dict:
+    todos.append(todo)
+    return {
+        "data": { "Todo added." }
+    }
