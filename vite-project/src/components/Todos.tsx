@@ -23,9 +23,94 @@ interface Todo {
   item: string;
 }
 
+interface UpdateTodoProps {
+  item: string;
+  id: string;
+  fetchTodos: () => void;
+}
+
 const TodosContext = createContext({
   todos: [], fetchTodos: () => { }
 })
+
+
+interface TodoHelperProps {
+  item: string;
+  id: string;
+  fetchTodos: () => void;
+}
+//helper
+function TodoHelper({item, id, fetchTodos}: TodoHelperProps) {
+  return (
+    <Box p={1} shadow="sm">
+      <Flex justify="space-between">
+        <Text mt={4} as="div">
+          {item}
+          <Flex align="end">
+            <UpdateTodo item={item} id={id} fetchTodos={fetchTodos}/>
+          </Flex>
+        </Text>
+      </Flex>
+    </Box>
+  )
+}
+
+//update
+const UpdateTodo = ({ item, id, fetchTodos }: UpdateTodoProps) => {
+  const [todo, setTodo] = useState(item);
+  //backend call
+  const updateTodo = async () => {
+  await fetch(`http://localhost:8000/todo/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ item: todo }),
+  });
+  await fetchTodos();
+  };
+  //update todo modal
+  return (
+  <DialogRoot>
+    <DialogTrigger asChild>
+      <Button h="1.5rem" size="sm">
+        Update Todo
+      </Button>
+    </DialogTrigger>
+    <DialogContent
+      position="fixed"
+      top="50%"
+      left="50%"
+      transform="translate(-50%, -50%)"
+      bg="white"
+      p={6}
+      rounded="md"
+      shadow="xl"
+      maxW="md"
+      w="90%"
+      zIndex={1000}
+    >
+      <DialogHeader>
+        <DialogTitle>Update Todo</DialogTitle>
+      </DialogHeader>
+      <DialogBody>
+        <Input
+          pr="4.5rem"
+          type="text"
+          placeholder="Add a todo item"
+          aria-label="Add a todo item"
+          value={todo}
+          onChange={event => setTodo(event.target.value)}
+        />
+      </DialogBody>
+      <DialogFooter>
+        <DialogActionTrigger asChild>
+          <Button variant="outline" size="sm">Cancel</Button>
+        </DialogActionTrigger>
+        <Button size="sm" onClick={updateTodo}>Save</Button>
+      </DialogFooter>
+    </DialogContent>
+  </DialogRoot>
+  )
+}
 
 //write
 function AddTodo() {
@@ -77,11 +162,13 @@ export default function Todos() {
   return (
     <TodosContext.Provider value={{todos, fetchTodos}}>
       <Container maxW="container.xl" pt="100px">
-      <AddTodo />  {/*add todo container */}
+        <AddTodo />
         <Stack gap={5}>
-          {todos.map((todo: Todo) => (
-            <b key={todo.id}>{todo.item}</b>
-          ))}
+            {
+            todos.map((todo) => (
+                <TodoHelper item={todo.item} id={todo.id} fetchTodos={fetchTodos}/>
+            ))
+            }
         </Stack>
       </Container>
     </TodosContext.Provider>
