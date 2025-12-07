@@ -8,7 +8,7 @@ function App() {
   return (
     <ChakraProvider value={defaultSystem}>
       <Header />
-      <Todos /> 
+      <Todos />
     </ChakraProvider>
   )
 }

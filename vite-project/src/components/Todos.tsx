@@ -17,6 +17,11 @@ import {
   DialogActionTrigger,
 } from "@chakra-ui/react";
 
+interface TodoHelperProps {
+  item: string;
+  id: string;
+  fetchTodos: () => void;
+}
 
 interface Todo {
   id: string;
@@ -29,16 +34,17 @@ interface UpdateTodoProps {
   fetchTodos: () => void;
 }
 
+interface DeleteTodoProps {
+  id: string;
+  fetchTodos: () => void;
+}
+
 const TodosContext = createContext({
   todos: [], fetchTodos: () => { }
 })
 
 
-interface TodoHelperProps {
-  item: string;
-  id: string;
-  fetchTodos: () => void;
-}
+
 //helper
 function TodoHelper({item, id, fetchTodos}: TodoHelperProps) {
   return (
@@ -54,6 +60,23 @@ function TodoHelper({item, id, fetchTodos}: TodoHelperProps) {
     </Box>
   )
 }
+
+//delete
+const DeleteTodo = ({ id, fetchTodos }: DeleteTodoProps) => {
+  const deleteTodo = async () => {
+    await fetch(`http://localhost:8000/todo/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: id })
+    })
+    await fetchTodos()
+  }
+
+  return (
+    <Button h="1.5rem" size="sm" marginLeft={2} onClick={deleteTodo}>Delete Todo</Button>
+  )
+}
+
 
 //update
 const UpdateTodo = ({ item, id, fetchTodos }: UpdateTodoProps) => {
@@ -159,18 +182,19 @@ export default function Todos() {
     fetchTodos()
   }, [])
 
-  return (
-    <TodosContext.Provider value={{todos, fetchTodos}}>
-      <Container maxW="container.xl" pt="100px">
-        <AddTodo />
-        <Stack gap={5}>
-            {
-            todos.map((todo) => (
-                <TodoHelper item={todo.item} id={todo.id} fetchTodos={fetchTodos}/>
-            ))
-            }
-        </Stack>
-      </Container>
-    </TodosContext.Provider>
-  )
+  function TodoHelper({item, id, fetchTodos}: TodoHelperProps) {
+    return (
+      <Box p={1} shadow="sm">
+        <Flex justify="space-between">
+          <Text mt={4} as="div">
+            {item}
+            <Flex align="end">
+              <UpdateTodo item={item} id={id} fetchTodos={fetchTodos}/>
+              <DeleteTodo id={id} fetchTodos={fetchTodos}/>  {/* new */}
+            </Flex>
+          </Text>
+        </Flex>
+      </Box>
+    )
+  }
 }
