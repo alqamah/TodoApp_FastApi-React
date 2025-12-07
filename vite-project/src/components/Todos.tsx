@@ -24,7 +24,7 @@ interface Todo {
 }
 
 const TodosContext = createContext({
-  todos: [], fetchTodos: () => {}
+  todos: [], fetchTodos: () => { }
 })
 
 export default function Todos() {
@@ -50,7 +50,7 @@ export default function Todos() {
   }, [])
 
   return (
-    <TodosContext.Provider value={{todos, fetchTodos}}>
+    <TodosContext.Provider value={{ todos, fetchTodos }}>
       <Container maxW="container.xl" pt="100px">
         <Stack gap={5}>
           {error && <Text color="red.500">{error}</Text>}
