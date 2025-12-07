@@ -29,21 +29,10 @@ const TodosContext = createContext({
 
 export default function Todos() {
   const [todos, setTodos] = useState([])
-  const [error, setError] = useState("")
-
   const fetchTodos = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/todo")
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const todos = await response.json()
-      setTodos(todos.data)
-      setError("")
-    } catch (e: any) {
-      console.error("Failed to fetch todos:", e)
-      setError("Failed to connect to backend. Is it running?")
-    }
+    const response = await fetch("http://localhost:8000/todo")
+    const todos = await response.json()
+    setTodos(todos.data)
   }
   useEffect(() => {
     fetchTodos()
@@ -53,7 +42,6 @@ export default function Todos() {
     <TodosContext.Provider value={{ todos, fetchTodos }}>
       <Container maxW="container.xl" pt="100px">
         <Stack gap={5}>
-          {error && <Text color="red.500">{error}</Text>}
           {todos.map((todo: Todo) => (
             <b key={todo.id}>{todo.item}</b>
           ))}

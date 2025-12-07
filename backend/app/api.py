@@ -9,6 +9,8 @@ origins = [
     "localhost:5173",
     "http://localhost:5175",
     "localhost:5175"
+    "http://localhost:5174",
+    "localhost:5174"
 ]
 
 
@@ -24,11 +26,11 @@ app.add_middleware(
 todos = [
     {
         "id": "1",
-        "item": "Read a book."
+        "item": "Item 1 (persistent)."
     },
     {
         "id": "2",
-        "item": "Cycle around town."
+        "item": "Item 2 (persistent)."
     }
 ]
 
@@ -36,8 +38,6 @@ todos = [
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
     return {"message": "Welcome to your todo list."}
-
-
 
 @app.get("/todo", tags=["todos"])
 async def get_todos() -> dict:
